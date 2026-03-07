@@ -1,4 +1,4 @@
-import { ChevronDown, Sliders, Star, Zap } from 'lucide-react';
+import { BriefcaseIcon, ChevronDown, Sliders, Star, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   Popover,
@@ -33,6 +33,13 @@ const OptimizationModes = [
         className="text-[#2196F3] dark:text-[#BBDEFB] fill-[#BBDEFB] dark:fill-[#2196F3]"
       />
     ),
+  },
+  {
+    key: 'corporate',
+    title: 'Corporate',
+    description:
+      'C-Suite AI team: CEO orchestrates CFO, CTO, and CLO sub-agents for strategic analysis.',
+    icon: <BriefcaseIcon size={16} className="text-[#9C27B0]" />,
   },
 ];
 
@@ -93,6 +100,11 @@ const Optimization = () => {
                         {mode.key === 'quality' && (
                           <span className="bg-sky-500/70 dark:bg-sky-500/40 border border-sky-600 px-1 rounded-full text-[10px] text-white">
                             Beta
+                          </span>
+                        )}
+                        {mode.key === 'corporate' && (
+                          <span className="bg-purple-500/70 dark:bg-purple-500/40 border border-purple-600 px-1 rounded-full text-[10px] text-white">
+                            New
                           </span>
                         )}
                       </div>

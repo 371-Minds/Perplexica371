@@ -2,6 +2,7 @@ import { z } from 'zod';
 import ModelRegistry from '@/lib/models/registry';
 import { ModelWithProvider } from '@/lib/models/types';
 import SearchAgent from '@/lib/agents/search';
+import CSuiteAgent from '@/lib/agents/csuite';
 import SessionManager from '@/lib/session';
 import { ChatTurnMessage } from '@/lib/types';
 import { SearchSources } from '@/lib/agents/search/types';
@@ -33,8 +34,9 @@ const embeddingModelSchema: z.ZodType<ModelWithProvider> = z.object({
 
 const bodySchema = z.object({
   message: messageSchema,
-  optimizationMode: z.enum(['speed', 'balanced', 'quality'], {
-    message: 'Optimization mode must be one of: speed, balanced, quality',
+  optimizationMode: z.enum(['speed', 'balanced', 'quality', 'corporate'], {
+    message:
+      'Optimization mode must be one of: speed, balanced, quality, corporate',
   }),
   sources: z.array(z.string()).optional().default([]),
   history: z
@@ -150,6 +152,7 @@ export const POST = async (req: Request) => {
     });
 
     const agent = new SearchAgent();
+    const csuiteAgent = new CSuiteAgent();
     const session = SessionManager.createSession();
 
     const responseStream = new TransformStream();
@@ -210,20 +213,33 @@ export const POST = async (req: Request) => {
       }
     });
 
-    agent.searchAsync(session, {
-      chatHistory: history,
-      followUp: message.content,
-      chatId: body.message.chatId,
-      messageId: body.message.messageId,
-      config: {
-        llm,
-        embedding: embedding,
-        sources: body.sources as SearchSources[],
-        mode: body.optimizationMode,
-        fileIds: body.files,
-        systemInstructions: body.systemInstructions || 'None',
-      },
-    });
+    if (body.optimizationMode === 'corporate') {
+      csuiteAgent.searchAsync(session, {
+        chatHistory: history,
+        followUp: message.content,
+        chatId: body.message.chatId,
+        messageId: body.message.messageId,
+        config: {
+          llm,
+          systemInstructions: body.systemInstructions || 'None',
+        },
+      });
+    } else {
+      agent.searchAsync(session, {
+        chatHistory: history,
+        followUp: message.content,
+        chatId: body.message.chatId,
+        messageId: body.message.messageId,
+        config: {
+          llm,
+          embedding: embedding,
+          sources: body.sources as SearchSources[],
+          mode: body.optimizationMode,
+          fileIds: body.files,
+          systemInstructions: body.systemInstructions || 'None',
+        },
+      });
+    }
 
     ensureChatExists({
       id: body.message.chatId,
