@@ -1,3 +1,5 @@
+# Enhancements
+
 To enhance **Perplexica** with **MCP (Model Context Protocol)** servers and a **C-Suite AI Agent team** (CEO, CFO, CTO, CLO), we need to modify its architecture to support external tool connections and hierarchical agent orchestration.
 
 Since Perplexica is a Next.js-based search engine that already uses an "Agentic Search Pipeline" (Classifier → Researcher → Writer), we can extend this existing logic.

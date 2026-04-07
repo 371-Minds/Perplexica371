@@ -243,6 +243,8 @@ Perplexica runs on Next.js and handles all API requests. It works right away on 
 - [ ] Adding ability to create custom agents (name T.B.D.)
 - [ ] Adding authentication
 
+For a detailed look at planned enhancements — including MCP server integration and C-Suite AI agents — see [docs/enhancements.md](docs/enhancements.md).
+
 ## Support Us
 
 If you find Perplexica useful, consider giving us a star on GitHub. This helps more people discover Perplexica and supports the development of new features. Your support is greatly appreciated.
