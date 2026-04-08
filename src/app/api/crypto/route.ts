@@ -1,14 +1,29 @@
+const COINGECKO_API = 'https://api.coingecko.com/api/v3';
+const TRACKED_COINS = [
+  'bitcoin',
+  'ethereum',
+  'solana',
+  'binancecoin',
+  'ripple',
+];
+
 export const GET = async () => {
   try {
-    const res = await fetch(
-      'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,solana,binancecoin,ripple&order=market_cap_desc&per_page=5&page=1&sparkline=false&price_change_percentage=24h',
-      {
-        headers: {
-          Accept: 'application/json',
-        },
-        next: { revalidate: 60 },
+    const url = new URL(`${COINGECKO_API}/coins/markets`);
+    url.searchParams.set('vs_currency', 'usd');
+    url.searchParams.set('ids', TRACKED_COINS.join(','));
+    url.searchParams.set('order', 'market_cap_desc');
+    url.searchParams.set('per_page', '5');
+    url.searchParams.set('page', '1');
+    url.searchParams.set('sparkline', 'false');
+    url.searchParams.set('price_change_percentage', '24h');
+
+    const res = await fetch(url.toString(), {
+      headers: {
+        Accept: 'application/json',
       },
-    );
+      next: { revalidate: 60 },
+    });
 
     if (!res.ok) {
       return Response.json(
