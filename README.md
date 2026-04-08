@@ -40,39 +40,6 @@ Want to know more about its architecture and how it works? You can read it [here
 
 ✨ **More coming soon** - We're actively developing new features based on community feedback. Join our Discord to help shape Perplexica's future!
 
-## Sponsors
-
-Perplexica's development is powered by the generous support of our sponsors. Their contributions help keep this project free, open-source, and accessible to everyone.
-
-<div align="center">
-  
-  
-<a href="https://www.warp.dev/perplexica">
-  <img alt="Warp Terminal" src=".assets/sponsers/warp.png" width="100%">
-</a>
-
-### **✨ [Try Warp - The AI-Powered Terminal →](https://www.warp.dev/perplexica)**
-
-Warp is revolutionizing development workflows with AI-powered features, modern UX, and blazing-fast performance. Used by developers at top companies worldwide.
-
-</div>
-
----
-
-We'd also like to thank the following partners for their generous support:
-
-<table>
-  <tr>
-    <td width="100" align="center">
-      <a href="https://dashboard.exa.ai" target="_blank">
-        <img src=".assets/sponsers/exa.png" alt="Exa" width="80" height="80" style="border-radius: .75rem;" />
-      </a>
-    </td>
-    <td>
-      <a href="https://dashboard.exa.ai">Exa</a> • The Perfect Web Search API for LLMs - web search, crawling, deep research, and answer APIs
-    </td>
-  </tr>
-</table>
 
 ## Installation
 
@@ -242,20 +209,6 @@ Perplexica runs on Next.js and handles all API requests. It works right away on 
 - [ ] Adding more widgets, integrations, search sources
 - [ ] Adding ability to create custom agents (name T.B.D.)
 - [ ] Adding authentication
-
-For a detailed look at planned enhancements — including MCP server integration and C-Suite AI agents — see [docs/enhancements.md](docs/enhancements.md).
-
-## Support Us
-
-If you find Perplexica useful, consider giving us a star on GitHub. This helps more people discover Perplexica and supports the development of new features. Your support is greatly appreciated.
-
-### Donations
-
-We also accept donations to help sustain our project. If you would like to contribute, you can use the following options to donate. Thank you for your support!
-
-| Ethereum                                              |
-| ----------------------------------------------------- |
-| Address: `0xB025a84b2F269570Eb8D4b05DEdaA41D8525B6DD` |
 
 ## Contribution
 
