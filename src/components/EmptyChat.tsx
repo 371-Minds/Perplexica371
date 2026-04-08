@@ -7,10 +7,12 @@ import { File } from './ChatWindow';
 import Link from 'next/link';
 import WeatherWidget from './WeatherWidget';
 import NewsArticleWidget from './NewsArticleWidget';
+import CryptoWidget from './CryptoWidget';
 import SettingsButtonMobile from '@/components/Settings/SettingsButtonMobile';
 import {
   getShowNewsWidget,
   getShowWeatherWidget,
+  getShowCryptoWidget,
 } from '@/lib/config/clientRegistry';
 
 const EmptyChat = () => {
@@ -20,11 +22,15 @@ const EmptyChat = () => {
   const [showNews, setShowNews] = useState(() =>
     typeof window !== 'undefined' ? getShowNewsWidget() : true,
   );
+  const [showCrypto, setShowCrypto] = useState(() =>
+    typeof window !== 'undefined' ? getShowCryptoWidget() : true,
+  );
 
   useEffect(() => {
     const updateWidgetVisibility = () => {
       setShowWeather(getShowWeatherWidget());
       setShowNews(getShowNewsWidget());
+      setShowCrypto(getShowCryptoWidget());
     };
 
     updateWidgetVisibility();
@@ -65,6 +71,11 @@ const EmptyChat = () => {
                 <NewsArticleWidget />
               </div>
             )}
+          </div>
+        )}
+        {showCrypto && (
+          <div className="w-full">
+            <CryptoWidget />
           </div>
         )}
       </div>
