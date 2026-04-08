@@ -121,8 +121,10 @@ export class McpManager {
           fieldType = z.string();
           break;
         case 'number':
-        case 'integer':
           fieldType = z.number();
+          break;
+        case 'integer':
+          fieldType = z.number().int();
           break;
         case 'boolean':
           fieldType = z.boolean();
