@@ -4,6 +4,9 @@ npm-debug.log
 yarn-error.log
 package-lock.json
 
+# Bun
+bun-error.log
+
 # TypeScript build cache
 tsconfig.tsbuildinfo
 

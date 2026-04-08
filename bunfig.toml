@@ -1,0 +1,5 @@
+[install]
+lockfile = true
+
+[install.cache]
+dir = "/tmp/bun-cache"

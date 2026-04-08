@@ -1,11 +1,11 @@
-FROM node:24.5.0-slim AS builder
+FROM oven/bun:1 AS builder
 
 RUN apt-get update && apt-get install -y python3 python3-pip sqlite3 && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /home/perplexica
 
-COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile --network-timeout 600000
+COPY package.json bun.lock bunfig.toml ./
+RUN bun install --frozen-lockfile
 
 COPY tsconfig.json next.config.mjs next-env.d.ts postcss.config.js drizzle.config.ts tailwind.config.ts ./
 COPY src ./src
@@ -13,7 +13,7 @@ COPY public ./public
 COPY drizzle ./drizzle
 
 RUN mkdir -p /home/perplexica/data
-RUN yarn build
+RUN bun run build
 
 FROM node:24.5.0-slim
 

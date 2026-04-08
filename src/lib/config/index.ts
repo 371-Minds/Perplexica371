@@ -87,6 +87,16 @@ class ConfigManager {
         default: true,
         scope: 'client',
       },
+      {
+        name: 'Show crypto widget',
+        key: 'showCryptoWidget',
+        type: 'switch',
+        required: false,
+        description:
+          'Display the cryptocurrency prices card on the home screen.',
+        default: true,
+        scope: 'client',
+      },
     ],
     personalization: [
       {
