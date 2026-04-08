@@ -1,5 +1,5 @@
 import SessionManager from '@/lib/session';
-import { TextBlock } from '@/lib/types';
+import { Message, TextBlock } from '@/lib/types';
 import db from '@/lib/db';
 import { messages } from '@/lib/db/schema';
 import { and, eq, gt } from 'drizzle-orm';
@@ -10,26 +10,101 @@ import {
   CLO_SYSTEM_PROMPT,
 } from '@/lib/prompts/csuite';
 import { McpManager } from '@/lib/mcp/McpManager';
+import { Tool, ToolCall } from '@/lib/models/types';
 import { CSuiteAgentInput, SubAgentReport } from './types';
 
 class CSuiteAgent {
+  private readonly MAX_TOOL_ITERATIONS = 5;
+
+  /**
+   * Run a sub-agent (CFO / CTO / CLO) with an optional tool-calling loop.
+   *
+   * When `tools` is non-empty and `mcp` + `mcpRole` are provided the agent
+   * enters a ReAct loop: it calls the LLM, executes any tool calls via the
+   * McpManager, feeds the results back as `tool` messages, and repeats until
+   * the model stops requesting tools or the iteration limit is reached.
+   *
+   * When no tools are available the method falls through to a simple
+   * single-shot streaming call (previous behaviour).
+   */
   private async runSubAgent(
     systemPrompt: string,
     query: string,
     config: CSuiteAgentInput['config'],
+    tools: Tool[] = [],
+    mcp?: McpManager,
+    mcpRole?: string,
   ): Promise<string> {
-    const stream = config.llm.streamText({
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: query },
-      ],
-    });
+    const agentMessages: Message[] = [
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: query },
+    ];
 
-    let output = '';
-    for await (const chunk of stream) {
-      output += chunk.contentChunk;
+    let finalOutput = '';
+
+    const iterations =
+      tools.length > 0 && mcp && mcpRole ? this.MAX_TOOL_ITERATIONS : 1;
+
+    for (let i = 0; i < iterations; i++) {
+      const stream = config.llm.streamText({
+        messages: agentMessages,
+        tools: tools.length > 0 ? tools : undefined,
+      });
+
+      let contentChunk = '';
+      const accumulatedToolCalls: ToolCall[] = [];
+
+      for await (const chunk of stream) {
+        contentChunk += chunk.contentChunk;
+
+        for (const tc of chunk.toolCallChunk) {
+          const existing = accumulatedToolCalls.findIndex(
+            (ftc) => ftc.id === tc.id,
+          );
+          if (existing !== -1) {
+            accumulatedToolCalls[existing].arguments = tc.arguments;
+          } else {
+            accumulatedToolCalls.push({ ...tc });
+          }
+        }
+      }
+
+      if (contentChunk) {
+        // Each iteration replaces the output: earlier iterations are
+        // intermediate tool-call steps; only the last content response
+        // (when the model stops requesting tools) is the final answer.
+        finalOutput = contentChunk;
+      }
+
+      if (accumulatedToolCalls.length === 0 || !mcp || !mcpRole) {
+        break;
+      }
+
+      agentMessages.push({
+        role: 'assistant',
+        content: contentChunk,
+        tool_calls: accumulatedToolCalls,
+      });
+
+      for (const tc of accumulatedToolCalls) {
+        let toolResult: string;
+        try {
+          const result = await mcp.callTool(mcpRole, tc.name, tc.arguments);
+          toolResult = JSON.stringify(result);
+        } catch (err) {
+          toolResult = `Error calling tool "${tc.name}": ${(err as Error).message}`;
+        }
+
+        agentMessages.push({
+          role: 'tool',
+          id: tc.id,
+          name: tc.name,
+          content: toolResult,
+        });
+      }
     }
-    return output;
+
+    return finalOutput;
   }
 
   async searchAsync(session: SessionManager, input: CSuiteAgentInput) {
@@ -97,6 +172,22 @@ class CSuiteAgent {
       // MCP servers are optional; proceed without them if unavailable
     }
 
+    // Fetch per-role tools after connecting (empty array if server unavailable)
+    const [cfoTools, ctoTools, cloTools] = await Promise.all([
+      mcp.getToolsAsAppTools('finance').catch((err) => {
+        console.warn('Failed to fetch CFO tools from MCP:', err);
+        return [] as Tool[];
+      }),
+      mcp.getToolsAsAppTools('tech').catch((err) => {
+        console.warn('Failed to fetch CTO tools from MCP:', err);
+        return [] as Tool[];
+      }),
+      mcp.getToolsAsAppTools('legal').catch((err) => {
+        console.warn('Failed to fetch CLO tools from MCP:', err);
+        return [] as Tool[];
+      }),
+    ]);
+
     const subReports: SubAgentReport[] = [];
 
     const [cfoReport, ctoReport, cloReport] = await Promise.all([
@@ -104,16 +195,25 @@ class CSuiteAgent {
         CFO_SYSTEM_PROMPT(),
         `Regarding the following query, provide a focused financial analysis:\n\n${input.followUp}`,
         input.config,
+        cfoTools,
+        mcp,
+        'finance',
       ),
       this.runSubAgent(
         CTO_SYSTEM_PROMPT(),
         `Regarding the following query, provide a focused technical analysis:\n\n${input.followUp}`,
         input.config,
+        ctoTools,
+        mcp,
+        'tech',
       ),
       this.runSubAgent(
         CLO_SYSTEM_PROMPT(),
         `Regarding the following query, provide a focused legal and compliance analysis:\n\n${input.followUp}`,
         input.config,
+        cloTools,
+        mcp,
+        'legal',
       ),
     ]);
 
