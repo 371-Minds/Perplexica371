@@ -45,7 +45,7 @@ npm run lint
 
 ## Akash deployment
 
-This repository now includes `/home/runner/work/Perplexica371/Perplexica371/akash.yaml`, a starter Akash SDL for running the bundled container with a persistent `/home/vane/data` volume.
+This repository now includes `akash.yaml`, a starter Akash SDL for running the bundled container with a persistent `/home/vane/data` volume.
 
 1. Publish the image you want Akash to run, or swap the image reference in `akash.yaml` to a registry you control.
 2. Adjust the compute, storage, and pricing values for your Akash provider.

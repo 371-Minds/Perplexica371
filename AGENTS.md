@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Use `/home/runner/work/Perplexica371/Perplexica371/CONTRIBUTING.md` as the primary contributor reference.
+Use `CONTRIBUTING.md` as the primary contributor reference.
 
 ## Project map
 
