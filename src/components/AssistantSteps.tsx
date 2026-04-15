@@ -63,15 +63,30 @@ const AssistantSteps = ({
   isLast: boolean;
   researchEnded: boolean;
 }) => {
-  const [isExpanded, setIsExpanded] = useState(isLast && status === 'answering');
+  const phase =
+    researchEnded && isLast
+      ? 'ended'
+      : status === 'answering' && isLast
+        ? 'answering'
+        : 'idle';
+  const defaultExpanded = phase === 'answering';
+  const [phaseOverrides, setPhaseOverrides] = useState<
+    Partial<Record<typeof phase, boolean>>
+  >({});
   const { loading } = useChat();
+  const isExpanded = phaseOverrides[phase] ?? defaultExpanded;
 
   if (!block || block.data.subSteps.length === 0) return null;
 
   return (
     <div className="rounded-lg bg-light-secondary dark:bg-dark-secondary border border-light-200 dark:border-dark-200 overflow-hidden">
       <button
-        onClick={() => setIsExpanded(!isExpanded)}
+        onClick={() =>
+          setPhaseOverrides((current) => ({
+            ...current,
+            [phase]: !isExpanded,
+          }))
+        }
         className="w-full flex items-center justify-between p-3 hover:bg-light-200 dark:hover:bg-dark-200 transition duration-200"
       >
         <div className="flex items-center gap-2">

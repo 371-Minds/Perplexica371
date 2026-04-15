@@ -9,12 +9,22 @@ interface ThinkBoxProps {
 }
 
 const ThinkBox = ({ content, thinkingEnded }: ThinkBoxProps) => {
-  const [isExpanded, setIsExpanded] = useState(!thinkingEnded);
+  const phase = thinkingEnded ? 'ended' : 'thinking';
+  const defaultExpanded = !thinkingEnded;
+  const [phaseOverrides, setPhaseOverrides] = useState<
+    Partial<Record<typeof phase, boolean>>
+  >({});
+  const isExpanded = phaseOverrides[phase] ?? defaultExpanded;
 
   return (
     <div className="my-4 bg-light-secondary/50 dark:bg-dark-secondary/50 rounded-xl border border-light-200 dark:border-dark-200 overflow-hidden">
       <button
-        onClick={() => setIsExpanded(!isExpanded)}
+        onClick={() =>
+          setPhaseOverrides((current) => ({
+            ...current,
+            [phase]: !isExpanded,
+          }))
+        }
         className="w-full flex items-center justify-between px-4 py-1 text-black/90 dark:text-white/90 hover:bg-light-200 dark:hover:bg-dark-200 transition duration-200"
       >
         <div className="flex items-center space-x-2">
