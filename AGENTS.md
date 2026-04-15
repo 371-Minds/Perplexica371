@@ -1,22 +1,25 @@
 # AGENTS.md
 
-This repository already has contributor guidance in `/CONTRIBUTING.md`. Use that file as the primary reference when making code changes.
+Use `/home/runner/work/Perplexica371/Perplexica371/CONTRIBUTING.md` as the primary contributor reference.
 
 ## Project map
 
 - `src/app`: Next.js app routes, pages, and API route handlers
 - `src/components`: reusable UI components
 - `src/lib`: search agents, models, prompts, database code, uploads, and integrations
-- `docs/architecture`: high-level architecture and request flow documentation
+- `docs/architecture`: architecture and request-flow documentation
+- `akash.yaml`: Akash deployment manifest for the bundled container image
 
 ## Local workflow
 
 1. Install dependencies with `npm install`.
 2. Start the app locally with `npm run dev`.
-3. Use `npm run build` and `npm run lint` for repository validation when the environment supports them.
+3. Validate with `npm run build` and `npm run lint` when the environment supports them.
+4. Keep `README.md`, `AGENTS.md`, Docker files, and `akash.yaml` aligned when deployment behavior changes.
 
 ## Change guidance
 
 - Prefer small, focused changes that match the existing structure.
+- This fork periodically pulls changes from upstream `ItzCrazyKns/Vane`; preserve fork-specific integrations unless the task says otherwise.
 - Update the nearest relevant documentation when behavior or developer workflows change.
-- If you are unsure where to make a change, start with `/CONTRIBUTING.md`.
+- If you are unsure where to make a change, start with `CONTRIBUTING.md`.

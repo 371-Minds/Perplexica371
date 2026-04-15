@@ -1,0 +1,39 @@
+---
+version: "2.0"
+
+services:
+  vane:
+    image: itzcrazykns1337/vane:latest
+    expose:
+      - port: 3000
+        as: 80
+        to:
+          - global: true
+    params:
+      storage:
+        data:
+          mount: /home/vane/data
+
+profiles:
+  compute:
+    vane:
+      resources:
+        cpu:
+          units: 1
+        memory:
+          size: 2Gi
+        storage:
+          - name: data
+            size: 10Gi
+  placement:
+    akash:
+      pricing:
+        vane:
+          denom: uakt
+          amount: 1000
+
+deployment:
+  vane:
+    akash:
+      profile: vane
+      count: 1
