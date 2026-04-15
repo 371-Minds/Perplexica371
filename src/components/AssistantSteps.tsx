@@ -9,7 +9,7 @@ import {
   BookSearch,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { ResearchBlock, ResearchBlockSubStep } from '@/lib/types';
 import { useChat } from '@/lib/hooks/useChat';
 
@@ -56,23 +56,15 @@ const AssistantSteps = ({
   block,
   status,
   isLast,
+  researchEnded,
 }: {
   block: ResearchBlock;
   status: 'answering' | 'completed' | 'error';
   isLast: boolean;
+  researchEnded: boolean;
 }) => {
-  const [isExpanded, setIsExpanded] = useState(
-    isLast && status === 'answering' ? true : false,
-  );
-  const { researchEnded, loading } = useChat();
-
-  useEffect(() => {
-    if (researchEnded && isLast) {
-      setIsExpanded(false);
-    } else if (status === 'answering' && isLast) {
-      setIsExpanded(true);
-    }
-  }, [researchEnded, status]);
+  const [isExpanded, setIsExpanded] = useState(isLast && status === 'answering');
+  const { loading } = useChat();
 
   if (!block || block.data.subSteps.length === 0) return null;
 

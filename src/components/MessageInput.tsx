@@ -8,18 +8,10 @@ import { useChat } from '@/lib/hooks/useChat';
 const MessageInput = () => {
   const { loading, sendMessage } = useChat();
 
-  const [copilotEnabled, setCopilotEnabled] = useState(false);
   const [message, setMessage] = useState('');
   const [textareaRows, setTextareaRows] = useState(1);
-  const [mode, setMode] = useState<'multi' | 'single'>('single');
-
-  useEffect(() => {
-    if (textareaRows >= 2 && message && mode === 'single') {
-      setMode('multi');
-    } else if (!message && mode === 'multi') {
-      setMode('single');
-    }
-  }, [textareaRows, mode, message]);
+  const mode: 'multi' | 'single' =
+    textareaRows >= 2 && message ? 'multi' : 'single';
 
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
 

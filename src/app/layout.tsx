@@ -1,7 +1,7 @@
 export const dynamic = 'force-dynamic';
 
 import type { Metadata } from 'next';
-import { Montserrat } from 'next/font/google';
+import localFont from 'next/font/local';
 import './globals.css';
 import { cn } from '@/lib/utils';
 import Sidebar from '@/components/Sidebar';
@@ -11,9 +11,29 @@ import configManager from '@/lib/config';
 import SetupWizard from '@/components/Setup/SetupWizard';
 import { ChatProvider } from '@/lib/hooks/useChat';
 
-const montserrat = Montserrat({
-  weight: ['300', '400', '500', '700'],
-  subsets: ['latin'],
+const montserrat = localFont({
+  src: [
+    {
+      path: './fonts/montserrat-latin-300-normal.woff2',
+      weight: '300',
+      style: 'normal',
+    },
+    {
+      path: './fonts/montserrat-latin-400-normal.woff2',
+      weight: '400',
+      style: 'normal',
+    },
+    {
+      path: './fonts/montserrat-latin-500-normal.woff2',
+      weight: '500',
+      style: 'normal',
+    },
+    {
+      path: './fonts/montserrat-latin-700-normal.woff2',
+      weight: '700',
+      style: 'normal',
+    },
+  ],
   display: 'swap',
   fallback: ['Arial', 'sans-serif'],
 });

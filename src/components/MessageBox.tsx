@@ -35,7 +35,11 @@ const ThinkTagProcessor = ({
   thinkingEnded: boolean;
 }) => {
   return (
-    <ThinkBox content={children as string} thinkingEnded={thinkingEnded} />
+    <ThinkBox
+      key={thinkingEnded ? 'ended' : 'active'}
+      content={children as string}
+      thinkingEnded={thinkingEnded}
+    />
   );
 };
 
@@ -136,9 +140,11 @@ const MessageBox = ({
             .map((researchBlock) => (
               <div key={researchBlock.id} className="flex flex-col space-y-2">
                 <AssistantSteps
+                  key={`${researchBlock.id}-${section.message.status}-${researchEnded ? 'ended' : 'active'}-${isLast ? 'last' : 'not-last'}`}
                   block={researchBlock}
                   status={section.message.status}
                   isLast={isLast}
+                  researchEnded={researchEnded}
                 />
               </div>
             ))}
